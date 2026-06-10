@@ -25,7 +25,7 @@ uv sync
 
 **Performance (5-fold CV):** AUC **0.766** · Gini **0.531** · KS **0.428** · Brier **0.122** — in the usual band for production credit scorecards, with well-calibrated probabilities. Top drivers (debt ratio, EBITDA margin, interest coverage, revenue growth) are economically sensible.
 
-**Explanations.** Per-company risk drivers are read from signed SHAP contributions and rewritten into 2–3 analyst sentences by an LLM (Groq, OpenAI-compatible), with a deterministic template fallback if no key is set.
+**Explanations.** For each scored company, the model extracts the top risk drivers using TreeSHAP (signed feature contributions that show which financials pushed the PD up or down). These drivers, together with qualitative signals extracted from the business description, are passed as structured context to an LLM (`llama-3.3-70b-versatile` via Groq's OpenAI-compatible API). The LLM is prompted to act as a credit analyst and rewrite the drivers into 2–3 fluent sentences, grounded strictly in the provided data — it receives no free-form context and is instructed not to invent numbers. If no API key is present, a deterministic template produces the same structured output as a fallback.
 
 Optional: set `GROQ_API_KEY` in `.env` to enable LLM explanations (otherwise the template is used).
 
